@@ -1,0 +1,14 @@
+# Example client configuration — copy and rename for each deployment.
+client_name: "Example Corp"
+model_name: "Example Analytics"
+
+# List the sections to include. Available: sales, finance, hr, inventory, customers, marketing
+sections:
+  - sales
+  - finance
+  - customers
+
+# Optional overrides applied on top of the base model settings.
+overrides:
+  culture: en-GB
+  compatibility_level: 1567

@@ -1,0 +1,55 @@
+table Employee
+
+	column EmployeeKey
+		dataType: int64
+		isKey
+		isHidden
+		summarizeBy: none
+
+	column EmployeeCode
+		dataType: string
+		summarizeBy: none
+
+	column FullName
+		dataType: string
+		summarizeBy: none
+
+	column Department
+		dataType: string
+		summarizeBy: none
+
+	column JobTitle
+		dataType: string
+		summarizeBy: none
+
+	column HireDateKey
+		dataType: dateTime
+		isHidden
+		formatString: Short Date
+		summarizeBy: none
+
+	column TermDateKey
+		dataType: dateTime
+		isHidden
+		formatString: Short Date
+		summarizeBy: none
+
+	column IsActive
+		dataType: boolean
+		summarizeBy: none
+
+	measure 'Total Employees' = COUNTROWS(Employee)
+		formatString: #,0
+		displayFolder: Headcount
+
+	measure 'Active Employees' = CALCULATE(COUNTROWS(Employee), Employee[IsActive] = TRUE())
+		formatString: #,0
+		displayFolder: Headcount
+
+	partition 'Employee-partition' = m
+		mode: import
+		source =
+			let
+				Source = #"EmployeeTable"
+			in
+				Source

@@ -1,0 +1,62 @@
+table MarketingFact
+
+	column MarketingKey
+		dataType: int64
+		isKey
+		isHidden
+		summarizeBy: none
+
+	column DateKey
+		dataType: dateTime
+		isHidden
+		formatString: Short Date
+		summarizeBy: none
+
+	column CampaignKey
+		dataType: int64
+		isHidden
+		summarizeBy: none
+
+	column Impressions
+		dataType: int64
+		formatString: #,0
+		summarizeBy: sum
+
+	column Clicks
+		dataType: int64
+		formatString: #,0
+		summarizeBy: sum
+
+	column Spend
+		dataType: double
+		formatString: #,0.00
+		summarizeBy: sum
+
+	column Conversions
+		dataType: int64
+		formatString: #,0
+		summarizeBy: sum
+
+	measure 'Total Spend' = SUM(MarketingFact[Spend])
+		formatString: #,0.00
+		displayFolder: Performance
+
+	measure 'Total Impressions' = SUM(MarketingFact[Impressions])
+		formatString: #,0
+		displayFolder: Performance
+
+	measure 'Click-through Rate %' = DIVIDE(SUM(MarketingFact[Clicks]), SUM(MarketingFact[Impressions]))
+		formatString: 0.00%
+		displayFolder: Performance
+
+	measure 'Cost per Conversion' = DIVIDE([Total Spend], SUM(MarketingFact[Conversions]))
+		formatString: #,0.00
+		displayFolder: Performance
+
+	partition 'MarketingFact-partition' = m
+		mode: import
+		source =
+			let
+				Source = #"MarketingFactTable"
+			in
+				Source

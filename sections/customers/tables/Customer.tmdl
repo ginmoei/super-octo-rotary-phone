@@ -1,0 +1,50 @@
+table Customer
+
+	column CustomerKey
+		dataType: int64
+		isKey
+		isHidden
+		summarizeBy: none
+
+	column CustomerCode
+		dataType: string
+		summarizeBy: none
+
+	column CustomerName
+		dataType: string
+		summarizeBy: none
+
+	column Segment
+		dataType: string
+		summarizeBy: none
+
+	column Region
+		dataType: string
+		summarizeBy: none
+
+	column Country
+		dataType: string
+		summarizeBy: none
+
+	column AcquisitionDateKey
+		dataType: dateTime
+		isHidden
+		formatString: Short Date
+		summarizeBy: none
+
+	column IsActive
+		dataType: boolean
+		summarizeBy: none
+
+	hierarchy 'Customer Geography'
+		level Country
+		level Region
+		level CustomerName
+
+	partition 'Customer-partition' = m
+		mode: import
+		source =
+			let
+				Source = #"CustomerTable"
+			in
+				Source

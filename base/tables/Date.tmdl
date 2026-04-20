@@ -1,0 +1,55 @@
+table 'Date'
+	dataCategory: Time
+	isHidden
+
+	column Date
+		dataType: dateTime
+		isKey
+		formatString: Short Date
+		summarizeBy: none
+
+	column Year
+		dataType: int64
+		formatString: 0
+		summarizeBy: none
+
+	column QuarterNo
+		dataType: int64
+		formatString: 0
+		isHidden
+		summarizeBy: none
+
+	column Quarter
+		dataType: string
+		summarizeBy: none
+
+	column MonthNo
+		dataType: int64
+		formatString: 0
+		isHidden
+		summarizeBy: none
+
+	column Month
+		dataType: string
+		summarizeBy: none
+
+	column WeekDay
+		dataType: string
+		summarizeBy: none
+
+	column IsWorkingDay
+		dataType: boolean
+		summarizeBy: none
+
+	hierarchy 'Calendar'
+		level Year
+		level Quarter
+		level Month
+
+	partition 'Date-partition' = m
+		mode: import
+		source =
+			let
+				Source = #"DateTable"
+			in
+				Source

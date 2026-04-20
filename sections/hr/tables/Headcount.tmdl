@@ -1,0 +1,56 @@
+table Headcount
+
+	column HeadcountKey
+		dataType: int64
+		isKey
+		isHidden
+		summarizeBy: none
+
+	column DateKey
+		dataType: dateTime
+		isHidden
+		formatString: Short Date
+		summarizeBy: none
+
+	column Department
+		dataType: string
+		summarizeBy: none
+
+	column HeadcountFTE
+		dataType: double
+		formatString: #,0.0
+		summarizeBy: sum
+
+	column LeaverCount
+		dataType: int64
+		formatString: #,0
+		summarizeBy: sum
+
+	column JoinerCount
+		dataType: int64
+		formatString: #,0
+		summarizeBy: sum
+
+	measure 'Total FTE' = SUM(Headcount[HeadcountFTE])
+		formatString: #,0.0
+		displayFolder: Headcount
+
+	measure 'Total Leavers' = SUM(Headcount[LeaverCount])
+		formatString: #,0
+		displayFolder: Attrition
+
+	measure 'Total Joiners' = SUM(Headcount[JoinerCount])
+		formatString: #,0
+		displayFolder: Attrition
+
+	measure 'Attrition Rate %' = DIVIDE([Total Leavers], [Total FTE])
+		formatString: 0.0%
+		displayFolder: Attrition
+
+	partition 'Headcount-partition' = m
+		mode: import
+		source =
+			let
+				Source = #"HeadcountTable"
+			in
+				Source

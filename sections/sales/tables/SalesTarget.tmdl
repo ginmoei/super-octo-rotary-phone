@@ -1,0 +1,42 @@
+table SalesTarget
+
+	column TargetKey
+		dataType: int64
+		isKey
+		isHidden
+		summarizeBy: none
+
+	column DateKey
+		dataType: dateTime
+		isHidden
+		formatString: Short Date
+		summarizeBy: none
+
+	column ProductCode
+		dataType: string
+		summarizeBy: none
+
+	column TargetAmount
+		dataType: double
+		formatString: #,0.00
+		summarizeBy: sum
+
+	measure 'Sales Target' = SUM(SalesTarget[TargetAmount])
+		formatString: #,0.00
+		displayFolder: Targets
+
+	measure 'vs Target' = [Total Sales] - [Sales Target]
+		formatString: #,0.00
+		displayFolder: Targets
+
+	measure 'Target Attainment %' = DIVIDE([Total Sales], [Sales Target])
+		formatString: 0.0%
+		displayFolder: Targets
+
+	partition 'SalesTarget-partition' = m
+		mode: import
+		source =
+			let
+				Source = #"SalesTargetTable"
+			in
+				Source

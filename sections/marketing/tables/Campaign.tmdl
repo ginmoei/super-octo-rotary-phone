@@ -1,0 +1,48 @@
+table Campaign
+
+	column CampaignKey
+		dataType: int64
+		isKey
+		isHidden
+		summarizeBy: none
+
+	column CampaignCode
+		dataType: string
+		summarizeBy: none
+
+	column CampaignName
+		dataType: string
+		summarizeBy: none
+
+	column CampaignType
+		dataType: string
+		summarizeBy: none
+
+	column Channel
+		dataType: string
+		summarizeBy: none
+
+	column StartDateKey
+		dataType: dateTime
+		isHidden
+		formatString: Short Date
+		summarizeBy: none
+
+	column EndDateKey
+		dataType: dateTime
+		isHidden
+		formatString: Short Date
+		summarizeBy: none
+
+	column BudgetAmount
+		dataType: double
+		formatString: #,0.00
+		summarizeBy: none
+
+	partition 'Campaign-partition' = m
+		mode: import
+		source =
+			let
+				Source = #"CampaignTable"
+			in
+				Source

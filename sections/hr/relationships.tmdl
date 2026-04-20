@@ -1,0 +1,8 @@
+relationship Employee_HireDate
+	fromColumn: Employee.HireDateKey
+	toColumn: 'Date'.Date
+	isActive: false
+
+relationship Headcount_Date
+	fromColumn: Headcount.DateKey
+	toColumn: 'Date'.Date

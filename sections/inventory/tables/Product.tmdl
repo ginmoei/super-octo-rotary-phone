@@ -1,0 +1,45 @@
+table Product
+
+	column ProductKey
+		dataType: int64
+		isKey
+		isHidden
+		summarizeBy: none
+
+	column ProductCode
+		dataType: string
+		summarizeBy: none
+
+	column ProductName
+		dataType: string
+		summarizeBy: none
+
+	column Category
+		dataType: string
+		summarizeBy: none
+
+	column SubCategory
+		dataType: string
+		summarizeBy: none
+
+	column UnitCost
+		dataType: double
+		formatString: #,0.00
+		summarizeBy: none
+
+	column IsActive
+		dataType: boolean
+		summarizeBy: none
+
+	hierarchy 'Product Hierarchy'
+		level Category
+		level SubCategory
+		level ProductName
+
+	partition 'Product-partition' = m
+		mode: import
+		source =
+			let
+				Source = #"ProductTable"
+			in
+				Source

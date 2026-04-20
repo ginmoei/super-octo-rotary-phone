@@ -1,0 +1,57 @@
+table InventoryFact
+
+	column InventoryKey
+		dataType: int64
+		isKey
+		isHidden
+		summarizeBy: none
+
+	column DateKey
+		dataType: dateTime
+		isHidden
+		formatString: Short Date
+		summarizeBy: none
+
+	column ProductKey
+		dataType: int64
+		isHidden
+		summarizeBy: none
+
+	column WarehouseCode
+		dataType: string
+		summarizeBy: none
+
+	column StockOnHand
+		dataType: int64
+		formatString: #,0
+		summarizeBy: sum
+
+	column StockValue
+		dataType: double
+		formatString: #,0.00
+		summarizeBy: sum
+
+	column DaysOnHand
+		dataType: double
+		formatString: #,0.0
+		summarizeBy: none
+
+	measure 'Total Stock On Hand' = SUM(InventoryFact[StockOnHand])
+		formatString: #,0
+		displayFolder: Inventory
+
+	measure 'Total Stock Value' = SUM(InventoryFact[StockValue])
+		formatString: #,0.00
+		displayFolder: Inventory
+
+	measure 'Avg Days On Hand' = AVERAGE(InventoryFact[DaysOnHand])
+		formatString: #,0.0
+		displayFolder: Inventory
+
+	partition 'InventoryFact-partition' = m
+		mode: import
+		source =
+			let
+				Source = #"InventoryFactTable"
+			in
+				Source

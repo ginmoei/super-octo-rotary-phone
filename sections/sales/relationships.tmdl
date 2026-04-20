@@ -1,0 +1,11 @@
+relationship SalesFact_Date
+	fromColumn: SalesFact.DateKey
+	toColumn: 'Date'.Date
+
+relationship SalesFact_Currency
+	fromColumn: SalesFact.CurrencyKey
+	toColumn: Currency.CurrencyKey
+
+relationship SalesTarget_Date
+	fromColumn: SalesTarget.DateKey
+	toColumn: 'Date'.Date

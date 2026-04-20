@@ -1,0 +1,11 @@
+relationship FinanceFact_Date
+	fromColumn: FinanceFact.DateKey
+	toColumn: 'Date'.Date
+
+relationship FinanceFact_Currency
+	fromColumn: FinanceFact.CurrencyKey
+	toColumn: Currency.CurrencyKey
+
+relationship Budget_Date
+	fromColumn: Budget.DateKey
+	toColumn: 'Date'.Date

@@ -1,0 +1,7 @@
+relationship CustomerFact_Date
+	fromColumn: CustomerFact.DateKey
+	toColumn: 'Date'.Date
+
+relationship CustomerFact_Customer
+	fromColumn: CustomerFact.CustomerKey
+	toColumn: Customer.CustomerKey

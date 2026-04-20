@@ -1,0 +1,7 @@
+relationship MarketingFact_Date
+	fromColumn: MarketingFact.DateKey
+	toColumn: 'Date'.Date
+
+relationship MarketingFact_Campaign
+	fromColumn: MarketingFact.CampaignKey
+	toColumn: Campaign.CampaignKey

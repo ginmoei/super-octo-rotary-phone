@@ -1,0 +1,46 @@
+table Budget
+
+	column BudgetKey
+		dataType: int64
+		isKey
+		isHidden
+		summarizeBy: none
+
+	column DateKey
+		dataType: dateTime
+		isHidden
+		formatString: Short Date
+		summarizeBy: none
+
+	column AccountCode
+		dataType: string
+		summarizeBy: none
+
+	column CostCentre
+		dataType: string
+		summarizeBy: none
+
+	column BudgetAmount
+		dataType: double
+		formatString: #,0.00
+		summarizeBy: sum
+
+	measure 'Total Budget' = SUM(Budget[BudgetAmount])
+		formatString: #,0.00
+		displayFolder: Budget
+
+	measure 'Actual vs Budget' = [Net Amount] - [Total Budget]
+		formatString: #,0.00
+		displayFolder: Budget
+
+	measure 'Budget Variance %' = DIVIDE([Actual vs Budget], ABS([Total Budget]))
+		formatString: 0.0%
+		displayFolder: Budget
+
+	partition 'Budget-partition' = m
+		mode: import
+		source =
+			let
+				Source = #"BudgetTable"
+			in
+				Source

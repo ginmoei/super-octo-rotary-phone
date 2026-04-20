@@ -1,0 +1,56 @@
+table FinanceFact
+
+	column EntryKey
+		dataType: int64
+		isKey
+		isHidden
+		summarizeBy: none
+
+	column DateKey
+		dataType: dateTime
+		isHidden
+		formatString: Short Date
+		summarizeBy: none
+
+	column CurrencyKey
+		dataType: int64
+		isHidden
+		summarizeBy: none
+
+	column AccountCode
+		dataType: string
+		summarizeBy: none
+
+	column CostCentre
+		dataType: string
+		summarizeBy: none
+
+	column DebitAmount
+		dataType: double
+		formatString: #,0.00
+		summarizeBy: sum
+
+	column CreditAmount
+		dataType: double
+		formatString: #,0.00
+		summarizeBy: sum
+
+	measure 'Total Debits' = SUM(FinanceFact[DebitAmount])
+		formatString: #,0.00
+		displayFolder: GL
+
+	measure 'Total Credits' = SUM(FinanceFact[CreditAmount])
+		formatString: #,0.00
+		displayFolder: GL
+
+	measure 'Net Amount' = [Total Debits] - [Total Credits]
+		formatString: #,0.00
+		displayFolder: GL
+
+	partition 'FinanceFact-partition' = m
+		mode: import
+		source =
+			let
+				Source = #"FinanceFactTable"
+			in
+				Source

@@ -1,0 +1,7 @@
+relationship InventoryFact_Date
+	fromColumn: InventoryFact.DateKey
+	toColumn: 'Date'.Date
+
+relationship InventoryFact_Product
+	fromColumn: InventoryFact.ProductKey
+	toColumn: Product.ProductKey

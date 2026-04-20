@@ -1,0 +1,74 @@
+table SalesFact
+
+	column SalesKey
+		dataType: int64
+		isKey
+		isHidden
+		summarizeBy: none
+
+	column DateKey
+		dataType: dateTime
+		isHidden
+		formatString: Short Date
+		summarizeBy: none
+
+	column CurrencyKey
+		dataType: int64
+		isHidden
+		summarizeBy: none
+
+	column ProductCode
+		dataType: string
+		summarizeBy: none
+
+	column CustomerCode
+		dataType: string
+		summarizeBy: none
+
+	column Quantity
+		dataType: int64
+		formatString: #,0
+		summarizeBy: sum
+
+	column UnitPrice
+		dataType: double
+		formatString: #,0.00
+		summarizeBy: none
+
+	column SalesAmount
+		dataType: double
+		formatString: #,0.00
+		summarizeBy: sum
+
+	column CostAmount
+		dataType: double
+		formatString: #,0.00
+		summarizeBy: sum
+
+	measure 'Total Sales' = SUM(SalesFact[SalesAmount])
+		formatString: #,0.00
+		displayFolder: Revenue
+
+	measure 'Total Cost' = SUM(SalesFact[CostAmount])
+		formatString: #,0.00
+		displayFolder: Revenue
+
+	measure 'Gross Profit' = [Total Sales] - [Total Cost]
+		formatString: #,0.00
+		displayFolder: Revenue
+
+	measure 'Gross Margin %' = DIVIDE([Gross Profit], [Total Sales])
+		formatString: 0.0%
+		displayFolder: Revenue
+
+	measure 'Units Sold' = SUM(SalesFact[Quantity])
+		formatString: #,0
+		displayFolder: Volume
+
+	partition 'SalesFact-partition' = m
+		mode: import
+		source =
+			let
+				Source = #"SalesFactTable"
+			in
+				Source

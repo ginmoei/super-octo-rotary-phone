@@ -1,0 +1,24 @@
+table Currency
+	isHidden
+
+	column CurrencyKey
+		dataType: int64
+		isKey
+		isHidden
+		summarizeBy: none
+
+	column CurrencyCode
+		dataType: string
+		summarizeBy: none
+
+	column CurrencyName
+		dataType: string
+		summarizeBy: none
+
+	partition 'Currency-partition' = m
+		mode: import
+		source =
+			let
+				Source = #"CurrencyTable"
+			in
+				Source

@@ -1,0 +1,51 @@
+table CustomerFact
+
+	column InteractionKey
+		dataType: int64
+		isKey
+		isHidden
+		summarizeBy: none
+
+	column DateKey
+		dataType: dateTime
+		isHidden
+		formatString: Short Date
+		summarizeBy: none
+
+	column CustomerKey
+		dataType: int64
+		isHidden
+		summarizeBy: none
+
+	column InteractionType
+		dataType: string
+		summarizeBy: none
+
+	column Channel
+		dataType: string
+		summarizeBy: none
+
+	column RevenueAmount
+		dataType: double
+		formatString: #,0.00
+		summarizeBy: sum
+
+	measure 'Total Interactions' = COUNTROWS(CustomerFact)
+		formatString: #,0
+		displayFolder: Customer Activity
+
+	measure 'Total Customer Revenue' = SUM(CustomerFact[RevenueAmount])
+		formatString: #,0.00
+		displayFolder: Customer Activity
+
+	measure 'Avg Revenue per Interaction' = DIVIDE([Total Customer Revenue], [Total Interactions])
+		formatString: #,0.00
+		displayFolder: Customer Activity
+
+	partition 'CustomerFact-partition' = m
+		mode: import
+		source =
+			let
+				Source = #"CustomerFactTable"
+			in
+				Source

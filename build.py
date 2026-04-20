@@ -58,6 +58,27 @@ def build(config_path: str) -> None:
         if rel_file.exists():
             rel_blocks.append(rel_file.read_text().strip())
 
+    # Auto-include integrations whose required sections are all present
+    selected_set = set(sections)
+    integrations_dir = ROOT / "integrations"
+    included_integrations: List[str] = []
+    if integrations_dir.exists():
+        for integ in sorted(integrations_dir.iterdir()):
+            if not integ.is_dir():
+                continue
+            manifest_file = integ / "manifest.yaml"
+            if not manifest_file.exists():
+                continue
+            with open(manifest_file) as fh:
+                manifest = yaml.safe_load(fh)
+            required = set(manifest.get("requires") or [])
+            if required and required.issubset(selected_set):
+                tables_dir = integ / "tables"
+                if tables_dir.exists():
+                    for tbl in tables_dir.glob("*.tmdl"):
+                        shutil.copy2(tbl, out / "tables" / tbl.name)
+                included_integrations.append(integ.name)
+
     # Validate all relationship endpoints resolve to assembled tables
     table_names: Set[str] = {p.stem for p in (out / "tables").glob("*.tmdl")}
     _validate_relationships(rel_blocks, table_names)
@@ -86,6 +107,7 @@ def build(config_path: str) -> None:
     rel_count = sum(block.count("relationship ") for block in rel_blocks)
     print(f"Built    : {model_name}  ({client_name})")
     print(f"Sections : {', '.join(sections) if sections else 'none'}")
+    print(f"Integrations: {', '.join(included_integrations) if included_integrations else 'none'}")
     print(f"Tables   : {table_count}")
     print(f"Rels     : {rel_count}")
     print(f"Output   : {out}")

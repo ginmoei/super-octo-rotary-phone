@@ -1,0 +1,17 @@
+table 'Sales & HR KPIs'
+
+	measure 'Sales per Employee' = DIVIDE([Total Sales], [Active Employees])
+		formatString: #,0.00
+		displayFolder: Workforce Productivity
+
+	measure 'Revenue per FTE' = DIVIDE([Total Sales], [Total FTE])
+		formatString: #,0.00
+		displayFolder: Workforce Productivity
+
+	measure 'Sales per Joiner' = DIVIDE([Total Sales], [Total Joiners])
+		formatString: #,0.00
+		displayFolder: Workforce Productivity
+
+	partition 'Sales & HR KPIs-partition' = dax
+		mode: import
+		source = {0}

@@ -1,0 +1,17 @@
+table 'Sales & Customer KPIs'
+
+	measure 'Revenue per Customer' = DIVIDE([Total Sales], DISTINCTCOUNT(CustomerFact[CustomerKey]))
+		formatString: #,0.00
+		displayFolder: Customer Value
+
+	measure 'Avg Interactions per Customer' = DIVIDE([Total Interactions], DISTINCTCOUNT(CustomerFact[CustomerKey]))
+		formatString: #,0.0
+		displayFolder: Customer Value
+
+	measure 'Revenue per Interaction' = DIVIDE([Total Sales], [Total Interactions])
+		formatString: #,0.00
+		displayFolder: Customer Value
+
+	partition 'Sales & Customer KPIs-partition' = dax
+		mode: import
+		source = {0}

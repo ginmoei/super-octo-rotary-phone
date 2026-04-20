@@ -1,0 +1,17 @@
+table 'Marketing ROI'
+
+	measure 'Return on Ad Spend' = DIVIDE([Total Sales], [Total Spend])
+		formatString: #,0.00
+		displayFolder: ROI
+
+	measure 'Revenue per Impression' = DIVIDE([Total Sales], [Total Impressions])
+		formatString: #,0.0000
+		displayFolder: ROI
+
+	measure 'Cost per Sale' = DIVIDE([Total Spend], [Units Sold])
+		formatString: #,0.00
+		displayFolder: ROI
+
+	partition 'Marketing ROI-partition' = dax
+		mode: import
+		source = {0}

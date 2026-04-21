@@ -130,8 +130,7 @@ def _write_pbip(out_root: Path, model_name: str, safe_name: str) -> None:
     """Write the .pbip, .platform, and .pbir files around the assembled TMDL."""
     (out_root / f"{safe_name}.pbip").write_text(json.dumps({
         "version": "1.0",
-        "artifacts": [{"report": {"path": f"{safe_name}.Report"}}],
-        "settings": {"enableTmdlSchemaVersion": 1}
+        "artifacts": [{"report": {"path": f"{safe_name}.Report"}}]
     }, indent=2) + "\n")
 
     dataset_dir = out_root / f"{safe_name}.Dataset"

@@ -50,7 +50,15 @@ table FinanceFact
 	partition 'FinanceFact-partition' = m
 		mode: import
 		source =
-			let
-				Source = #"FinanceFactTable"
-			in
-				Source
+			#table(
+				type table [
+					EntryKey = Int64.Type,
+					DateKey = datetime,
+					CurrencyKey = Int64.Type,
+					AccountCode = text,
+					CostCentre = text,
+					DebitAmount = number,
+					CreditAmount = number
+				],
+				{}
+			)

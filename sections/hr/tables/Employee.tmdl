@@ -49,7 +49,16 @@ table Employee
 	partition 'Employee-partition' = m
 		mode: import
 		source =
-			let
-				Source = #"EmployeeTable"
-			in
-				Source
+			#table(
+				type table [
+					EmployeeKey = Int64.Type,
+					EmployeeCode = text,
+					FullName = text,
+					Department = text,
+					JobTitle = text,
+					HireDateKey = datetime,
+					TermDateKey = datetime,
+					IsActive = logical
+				],
+				{}
+			)

@@ -42,7 +42,16 @@ table Campaign
 	partition 'Campaign-partition' = m
 		mode: import
 		source =
-			let
-				Source = #"CampaignTable"
-			in
-				Source
+			#table(
+				type table [
+					CampaignKey = Int64.Type,
+					CampaignCode = text,
+					CampaignName = text,
+					CampaignType = text,
+					Channel = text,
+					StartDateKey = datetime,
+					EndDateKey = datetime,
+					BudgetAmount = number
+				],
+				{}
+			)

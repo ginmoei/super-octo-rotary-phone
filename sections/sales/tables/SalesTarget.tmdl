@@ -36,7 +36,12 @@ table SalesTarget
 	partition 'SalesTarget-partition' = m
 		mode: import
 		source =
-			let
-				Source = #"SalesTargetTable"
-			in
-				Source
+			#table(
+				type table [
+					TargetKey = Int64.Type,
+					DateKey = datetime,
+					ProductCode = text,
+					TargetAmount = number
+				],
+				{}
+			)

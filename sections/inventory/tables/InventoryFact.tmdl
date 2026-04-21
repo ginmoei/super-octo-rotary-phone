@@ -51,7 +51,15 @@ table InventoryFact
 	partition 'InventoryFact-partition' = m
 		mode: import
 		source =
-			let
-				Source = #"InventoryFactTable"
-			in
-				Source
+			#table(
+				type table [
+					InventoryKey = Int64.Type,
+					DateKey = datetime,
+					ProductKey = Int64.Type,
+					WarehouseCode = text,
+					StockOnHand = Int64.Type,
+					StockValue = number,
+					DaysOnHand = number
+				],
+				{}
+			)

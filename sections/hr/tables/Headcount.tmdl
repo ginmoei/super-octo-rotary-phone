@@ -50,7 +50,14 @@ table Headcount
 	partition 'Headcount-partition' = m
 		mode: import
 		source =
-			let
-				Source = #"HeadcountTable"
-			in
-				Source
+			#table(
+				type table [
+					HeadcountKey = Int64.Type,
+					DateKey = datetime,
+					Department = text,
+					HeadcountFTE = number,
+					LeaverCount = Int64.Type,
+					JoinerCount = Int64.Type
+				],
+				{}
+			)

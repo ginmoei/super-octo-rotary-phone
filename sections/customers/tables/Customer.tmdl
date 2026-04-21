@@ -37,14 +37,29 @@ table Customer
 		summarizeBy: none
 
 	hierarchy 'Customer Geography'
+
 		level Country
+			column: Country
+
 		level Region
+			column: Region
+
 		level CustomerName
+			column: CustomerName
 
 	partition 'Customer-partition' = m
 		mode: import
 		source =
-			let
-				Source = #"CustomerTable"
-			in
-				Source
+			#table(
+				type table [
+					CustomerKey = Int64.Type,
+					CustomerCode = text,
+					CustomerName = text,
+					Segment = text,
+					Region = text,
+					Country = text,
+					AcquisitionDateKey = datetime,
+					IsActive = logical
+				],
+				{}
+			)

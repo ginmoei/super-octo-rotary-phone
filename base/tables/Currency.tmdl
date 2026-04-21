@@ -18,7 +18,11 @@ table Currency
 	partition 'Currency-partition' = m
 		mode: import
 		source =
-			let
-				Source = #"CurrencyTable"
-			in
-				Source
+			#table(
+				type table [
+					CurrencyKey = Int64.Type,
+					CurrencyCode = text,
+					CurrencyName = text
+				],
+				{}
+			)

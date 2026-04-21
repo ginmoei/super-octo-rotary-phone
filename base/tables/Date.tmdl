@@ -42,14 +42,29 @@ table 'Date'
 		summarizeBy: none
 
 	hierarchy 'Calendar'
+
 		level Year
+			column: Year
+
 		level Quarter
+			column: Quarter
+
 		level Month
+			column: Month
 
 	partition 'Date-partition' = m
 		mode: import
 		source =
-			let
-				Source = #"DateTable"
-			in
-				Source
+			#table(
+				type table [
+					Date = datetime,
+					Year = Int64.Type,
+					QuarterNo = Int64.Type,
+					Quarter = text,
+					MonthNo = Int64.Type,
+					Month = text,
+					WeekDay = text,
+					IsWorkingDay = logical
+				],
+				{}
+			)

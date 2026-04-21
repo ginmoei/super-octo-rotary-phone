@@ -56,7 +56,15 @@ table MarketingFact
 	partition 'MarketingFact-partition' = m
 		mode: import
 		source =
-			let
-				Source = #"MarketingFactTable"
-			in
-				Source
+			#table(
+				type table [
+					MarketingKey = Int64.Type,
+					DateKey = datetime,
+					CampaignKey = Int64.Type,
+					Impressions = Int64.Type,
+					Clicks = Int64.Type,
+					Spend = number,
+					Conversions = Int64.Type
+				],
+				{}
+			)

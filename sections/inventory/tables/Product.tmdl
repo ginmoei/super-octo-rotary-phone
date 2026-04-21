@@ -32,14 +32,28 @@ table Product
 		summarizeBy: none
 
 	hierarchy 'Product Hierarchy'
+
 		level Category
+			column: Category
+
 		level SubCategory
+			column: SubCategory
+
 		level ProductName
+			column: ProductName
 
 	partition 'Product-partition' = m
 		mode: import
 		source =
-			let
-				Source = #"ProductTable"
-			in
-				Source
+			#table(
+				type table [
+					ProductKey = Int64.Type,
+					ProductCode = text,
+					ProductName = text,
+					Category = text,
+					SubCategory = text,
+					UnitCost = number,
+					IsActive = logical
+				],
+				{}
+			)

@@ -45,7 +45,14 @@ table CustomerFact
 	partition 'CustomerFact-partition' = m
 		mode: import
 		source =
-			let
-				Source = #"CustomerFactTable"
-			in
-				Source
+			#table(
+				type table [
+					InteractionKey = Int64.Type,
+					DateKey = datetime,
+					CustomerKey = Int64.Type,
+					InteractionType = text,
+					Channel = text,
+					RevenueAmount = number
+				],
+				{}
+			)

@@ -40,7 +40,13 @@ table Budget
 	partition 'Budget-partition' = m
 		mode: import
 		source =
-			let
-				Source = #"BudgetTable"
-			in
-				Source
+			#table(
+				type table [
+					BudgetKey = Int64.Type,
+					DateKey = datetime,
+					AccountCode = text,
+					CostCentre = text,
+					BudgetAmount = number
+				],
+				{}
+			)

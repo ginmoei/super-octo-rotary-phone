@@ -68,7 +68,17 @@ table SalesFact
 	partition 'SalesFact-partition' = m
 		mode: import
 		source =
-			let
-				Source = #"SalesFactTable"
-			in
-				Source
+			#table(
+				type table [
+					SalesKey = Int64.Type,
+					DateKey = datetime,
+					CurrencyKey = Int64.Type,
+					ProductCode = text,
+					CustomerCode = text,
+					Quantity = Int64.Type,
+					UnitPrice = number,
+					SalesAmount = number,
+					CostAmount = number
+				],
+				{}
+			)

@@ -99,13 +99,9 @@ def build(config_path: str) -> None:
     if "culture" in overrides:
         model_content = _set_property(model_content, "culture", overrides["culture"])
 
-    # Inject relationships into model.tmdl (indented inside model block)
+    # Write relationships to their own file (not embedded in model.tmdl)
     if rel_blocks:
-        injected = "\n\n".join(
-            "\n".join("\t" + line for line in block.splitlines())
-            for block in rel_blocks
-        )
-        model_content = model_content.rstrip("\n") + "\n\n" + injected + "\n"
+        (tmdl_dir / "relationships.tmdl").write_text("\n\n".join(rel_blocks) + "\n")
 
     (tmdl_dir / "database.tmdl").write_text(database_content)
     (tmdl_dir / "model.tmdl").write_text(model_content)
@@ -134,6 +130,9 @@ def _write_pbip(out_root: Path, model_name: str, safe_name: str) -> None:
     }, indent=2) + "\n")
 
     dataset_dir = out_root / f"{safe_name}.Dataset"
+    (dataset_dir / "definition.pbism").write_text(json.dumps({
+        "version": "1.0"
+    }, indent=2) + "\n")
     (dataset_dir / ".platform").write_text(json.dumps({
         "$schema": "https://developer.microsoft.com/json-schemas/fabric/gitIntegration/platformProperties/2.0.0/schema.json",
         "metadata": {"type": "SemanticModel", "displayName": model_name},

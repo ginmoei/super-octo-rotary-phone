@@ -42,8 +42,8 @@ def build(config_path: str) -> None:
     if out_root.exists():
         shutil.rmtree(out_root)
 
-    # TMDL lives inside the Dataset artifact's definition/ subfolder
-    tmdl_dir = out_root / f"{safe_name}.Dataset" / "definition"
+    # TMDL lives inside the SemanticModel artifact's definition/ subfolder
+    tmdl_dir = out_root / f"{safe_name}.SemanticModel" / "definition"
     (tmdl_dir / "tables").mkdir(parents=True)
 
     # Seed from base/
@@ -91,7 +91,6 @@ def build(config_path: str) -> None:
     _validate_relationships(rel_blocks, table_names)
 
     # Apply overrides
-    database_content = _rename_database(database_content, model_name)
     if "compatibility_level" in overrides:
         database_content = _set_property(
             database_content, "compatibilityLevel", str(overrides["compatibility_level"])
@@ -102,6 +101,15 @@ def build(config_path: str) -> None:
     # Write relationships to their own file (not embedded in model.tmdl)
     if rel_blocks:
         (tmdl_dir / "relationships.tmdl").write_text("\n\n".join(rel_blocks) + "\n")
+
+    # Inject ref table declarations so PBI Desktop can locate each table file
+    table_refs = []
+    for tbl_file in sorted((tmdl_dir / "tables").glob("*.tmdl")):
+        name = _get_table_name(tbl_file.read_text())
+        quoted = f"'{name}'" if (" " in name or "&" in name) else name
+        table_refs.append(f"\tref table {quoted}")
+    if table_refs:
+        model_content = model_content.rstrip("\n") + "\n\n" + "\n".join(table_refs) + "\n"
 
     (tmdl_dir / "database.tmdl").write_text(database_content)
     (tmdl_dir / "model.tmdl").write_text(model_content)
@@ -126,14 +134,16 @@ def _write_pbip(out_root: Path, model_name: str, safe_name: str) -> None:
     """Write the .pbip, .platform, and .pbir files around the assembled TMDL."""
     (out_root / f"{safe_name}.pbip").write_text(json.dumps({
         "version": "1.0",
-        "artifacts": [{"report": {"path": f"{safe_name}.Report"}}]
+        "artifacts": [{"report": {"path": f"{safe_name}.Report"}}],
+        "settings": {"enableAutoRecovery": True}
     }, indent=2) + "\n")
 
-    dataset_dir = out_root / f"{safe_name}.Dataset"
-    (dataset_dir / "definition.pbism").write_text(json.dumps({
-        "version": "1.0"
+    sm_dir = out_root / f"{safe_name}.SemanticModel"
+    (sm_dir / "definition.pbism").write_text(json.dumps({
+        "version": "4.1",
+        "settings": {}
     }, indent=2) + "\n")
-    (dataset_dir / ".platform").write_text(json.dumps({
+    (sm_dir / ".platform").write_text(json.dumps({
         "$schema": "https://developer.microsoft.com/json-schemas/fabric/gitIntegration/platformProperties/2.0.0/schema.json",
         "metadata": {"type": "SemanticModel", "displayName": model_name},
         "config": {"version": "2.0", "logicalId": str(uuid.uuid4())}
@@ -147,8 +157,8 @@ def _write_pbip(out_root: Path, model_name: str, safe_name: str) -> None:
         "config": {"version": "2.0", "logicalId": str(uuid.uuid4())}
     }, indent=2) + "\n")
     (report_dir / "definition.pbir").write_text(json.dumps({
-        "version": "1.0",
-        "datasetReference": {"byPath": {"path": f"../{safe_name}.Dataset"}}
+        "version": "4.0",
+        "datasetReference": {"byPath": {"path": f"../{safe_name}.SemanticModel"}}
     }, indent=2) + "\n")
 
 
@@ -254,10 +264,6 @@ def _set_property(content: str, key: str, value: str) -> str:
                 lines.insert(i + 1, f"\t{key}: {value}")
                 return "\n".join(lines) + "\n"
     return new
-
-
-def _rename_database(content: str, name: str) -> str:
-    return re.sub(r"^(database\s+)'[^']+'", rf"\1'{name}'", content, flags=re.MULTILINE)
 
 
 def _validate_relationships(blocks: List[str], table_names: Set[str]) -> None:

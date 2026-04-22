@@ -12,6 +12,6 @@ table 'Sales & Customer KPIs'
 		formatString: #,0.00
 		displayFolder: Customer Value
 
-	partition 'Sales & Customer KPIs-partition' = dax
+	partition 'Sales & Customer KPIs-partition' = m
 		mode: import
 		source = {0}

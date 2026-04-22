@@ -1,3 +1,2 @@
 database
-	compatibilityLevel: 1567
-	defaultPowerBIDataSourceVersion: powerBI_V3
+	compatibilityLevel: 1600

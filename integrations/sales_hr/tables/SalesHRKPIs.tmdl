@@ -12,6 +12,6 @@ table 'Sales & HR KPIs'
 		formatString: #,0.00
 		displayFolder: Workforce Productivity
 
-	partition 'Sales & HR KPIs-partition' = dax
+	partition 'Sales & HR KPIs-partition' = m
 		mode: import
 		source = {0}

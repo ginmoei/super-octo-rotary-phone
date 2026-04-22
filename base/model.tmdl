@@ -1,3 +1,7 @@
 model Model
 	culture: en-US
-	discourageImplicitMeasures
+	defaultPowerBIDataSourceVersion: powerBI_V3
+	sourceQueryCulture: en-US
+	dataAccessOptions
+		legacyRedirects
+		returnErrorValuesAsNull

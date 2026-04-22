@@ -97,19 +97,29 @@ def build(config_path: str) -> None:
         )
     if "culture" in overrides:
         model_content = _set_property(model_content, "culture", overrides["culture"])
+        model_content = _set_property(model_content, "sourceQueryCulture", overrides["culture"])
 
     # Write relationships to their own file (not embedded in model.tmdl)
     if rel_blocks:
         (tmdl_dir / "relationships.tmdl").write_text("\n\n".join(rel_blocks) + "\n")
 
-    # Inject ref table declarations so PBI Desktop can locate each table file
-    table_refs = []
+    # Build top-level annotations and ref table declarations (outside model block, no indent)
+    table_entries = []
     for tbl_file in sorted((tmdl_dir / "tables").glob("*.tmdl")):
         name = _get_table_name(tbl_file.read_text())
-        quoted = f"'{name}'" if (" " in name or "&" in name) else name
-        table_refs.append(f"\tref table {quoted}")
-    if table_refs:
-        model_content = model_content.rstrip("\n") + "\n\n" + "\n".join(table_refs) + "\n"
+        table_entries.append(name)
+
+    query_order = json.dumps(table_entries)
+    ref_lines = "\n".join(
+        f"ref table '{n}'" if (" " in n or "&" in n) else f"ref table {n}"
+        for n in table_entries
+    )
+    model_content = (
+        model_content.rstrip("\n")
+        + "\n\nannotation __PBI_TimeIntelligenceEnabled = 0"
+        + f"\n\nannotation PBI_QueryOrder = {query_order}"
+        + f"\n\n{ref_lines}\n"
+    )
 
     (tmdl_dir / "database.tmdl").write_text(database_content)
     (tmdl_dir / "model.tmdl").write_text(model_content)

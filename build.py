@@ -103,6 +103,31 @@ def build(config_path: str) -> None:
     if rel_blocks:
         (tmdl_dir / "relationships.tmdl").write_text("\n\n".join(rel_blocks) + "\n")
 
+    # Extract measures from every assembled table into a single _Measures table.
+    # Measure-only tables (no columns) are deleted after extraction.
+    all_measures: List[str] = []
+    for tbl_file in sorted((tmdl_dir / "tables").glob("*.tmdl")):
+        content = tbl_file.read_text()
+        stripped, measures = _extract_and_strip_measures(content)
+        all_measures.extend(measures)
+        if measures:
+            if _has_columns(stripped):
+                tbl_file.write_text(stripped)
+            else:
+                tbl_file.unlink()
+
+    (tmdl_dir / "tables" / "_Measures.tmdl").write_text(
+        "table _Measures\n\n"
+        + ("\n\n".join(all_measures) + "\n\n" if all_measures else "")
+        + "\tpartition '_Measures-partition' = m\n"
+        + "\t\tmode: import\n"
+        + "\t\tsource =\n"
+        + "\t\t\tlet\n"
+        + "\t\t\t\tMeasures = #table(type table [], {})\n"
+        + "\t\t\tin\n"
+        + "\t\t\t\tMeasures\n"
+    )
+
     # Build top-level annotations and ref table declarations (outside model block, no indent)
     table_entries = []
     for tbl_file in sorted((tmdl_dir / "tables").glob("*.tmdl")):
@@ -274,6 +299,53 @@ def _set_property(content: str, key: str, value: str) -> str:
                 lines.insert(i + 1, f"\t{key}: {value}")
                 return "\n".join(lines) + "\n"
     return new
+
+
+def _extract_and_strip_measures(content: str) -> tuple:
+    """Return (stripped_content, measure_blocks).
+
+    Walks the table TMDL line by line, pulling out each measure block
+    (the measure declaration plus its double-indented properties).
+    Trailing blank lines inside a block are trimmed before saving.
+    Consecutive blank lines left behind in the stripped content are collapsed.
+    """
+    lines = content.splitlines()
+    result: List[str] = []
+    measures: List[str] = []
+    i = 0
+    while i < len(lines):
+        line = lines[i]
+        if re.match(r"^\tmeasure\b", line):
+            block = [line]
+            i += 1
+            while i < len(lines):
+                nxt = lines[i]
+                if re.match(r"^\t\t", nxt) or nxt.strip() == "":
+                    block.append(nxt)
+                    i += 1
+                else:
+                    break
+            while block and block[-1].strip() == "":
+                block.pop()
+            measures.append("\n".join(block))
+        else:
+            result.append(line)
+            i += 1
+
+    cleaned: List[str] = []
+    prev_blank = False
+    for line in result:
+        blank = line.strip() == ""
+        if blank and prev_blank:
+            continue
+        cleaned.append(line)
+        prev_blank = blank
+
+    return "\n".join(cleaned).rstrip("\n") + "\n", measures
+
+
+def _has_columns(content: str) -> bool:
+    return bool(re.search(r"^\tcolumn\b", content, re.MULTILINE))
 
 
 def _validate_relationships(blocks: List[str], table_names: Set[str]) -> None:

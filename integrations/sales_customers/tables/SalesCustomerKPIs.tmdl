@@ -14,4 +14,9 @@ table 'Sales & Customer KPIs'
 
 	partition 'Sales & Customer KPIs-partition' = m
 		mode: import
-		source = {0}
+		source = 
+			let
+				Measures = #table(type table [], {})
+			in
+				Measures
+
